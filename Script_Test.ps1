@@ -104,3 +104,27 @@ if (
     Write-Log "❌ Machine non compatible avec Windows 11 24H2. Mise à niveau bloquée."
     Exit 0  # Intune : ne rien faire
 }
+
+
+
+RunspaceId                  : 9f1f4f23-e2c5-4047-9cd6-3e9ee75ec7e2
+__GENUS                     : 2
+__CLASS                     : Win32_Tpm
+__SUPERCLASS                :
+__DYNASTY                   : Win32_Tpm
+__RELPATH                   : Win32_Tpm=@
+__PROPERTY_COUNT            : 10
+__DERIVATION                : {}
+__SERVER                    : PGW-T006-91-12
+__NAMESPACE                 : Root\CIMV2\Security\MicrosoftTpm
+__PATH                      : \\PGW-T006-91-12\Root\CIMV2\Security\MicrosoftTpm:Win32_Tpm=@
+IsActivated_InitialValue    : True
+IsEnabled_InitialValue      : True
+IsOwned_InitialValue        : True
+ManufacturerId              : 1314145024
+ManufacturerIdTxt           : NTC
+ManufacturerVersion         : 7.2.3.1
+ManufacturerVersionFull20   : 7.2.3.1
+ManufacturerVersionInfo     : NPCT75x
+PhysicalPresenceVersionInfo : 1.3
+SpecVersion                 : 2.0, 0, 1.59
