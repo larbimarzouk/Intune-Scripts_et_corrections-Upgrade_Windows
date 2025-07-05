@@ -2,26 +2,25 @@
 # Détection proactive de l’éligibilité à la mise à niveau vers Windows 11 24H2
 
 # DESCRIPTION
-# Ce script vérifie si le système est prêt pour la mise à niveau vers Windows 11 24H2
-# Affiche des messages à l'écran et écrit dans le fichier de log.
+# Vérifie la compatibilité matérielle et logicielle avant mise à niveau via Intune ou localement
 
 # NOTES
-# Version :         V1.2
+# Version :         V1.3
 # Auteur :          Marzouk Larbi / ChatGPT
 # Date :            5 Juillet 2025
 
-#======================== Section de configuration ================
+#======================== Configuration ===========================
 $RequiredDiskSpaceGB = 45
 $MinOSBuildFor24H2 = 26100
 #==================================================================
 
-# Initialisation du journal
+# Initialisation du log
 $LogPath = "$env:ProgramData\Microsoft\IntuneManagementExtension\Logs\Detection_Upgrade_Win11_24H2.log"
 Function Write-Log {
     param([string]$Message)
-    $timestamped = "$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') - $Message"
-    $timestamped | Out-File -FilePath $LogPath -Append
-    Write-Host $timestamped
+    $timestamp = "$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') - $Message"
+    $timestamp | Out-File -FilePath $LogPath -Append
+    Write-Host $timestamp
 }
 
 # Nettoyage erreurs
@@ -34,7 +33,7 @@ Write-Log "====== Détection de compatibilité pour Windows 11 24H2 - $(Get-Date
 $ComputerName = $env:COMPUTERNAME
 Write-Log "Machine : $ComputerName"
 
-# Vérifier si déjà en 24H2
+# Vérifier version actuelle
 $OSBuild = ([System.Environment]::OSVersion.Version).Build
 Write-Log "Build de l’OS détectée : $OSBuild"
 
@@ -44,11 +43,11 @@ if (-not $OSBuild) {
 }
 
 if ($OSBuild -ge $MinOSBuildFor24H2) {
-    Write-Log "Système déjà en Windows 11 24H2 ou supérieur. Aucune action nécessaire."
+    Write-Log "✅ Système déjà en Windows 11 24H2 ou supérieur. Aucune action nécessaire."
     Exit 0
 }
 
-# Espace disque
+# Vérification espace disque
 $drive = Get-WmiObject Win32_LogicalDisk -Filter "DeviceID='C:'"
 $FreeSpaceGB = [math]::Round($drive.FreeSpace / 1GB, 2)
 Write-Log "Espace disque libre sur C: $FreeSpaceGB Go"
@@ -58,7 +57,7 @@ $tpmVersion = $null
 try {
     $tpmData = tpmtool getdeviceinformation
     $tpmVersion = ($tpmData | Where-Object { $_ -match "TPM Version" }) -replace ".*TPM Version:\s*", ""
-    Write-Log "Version TPM : $tpmVersion"
+    Write-Log "Version TPM détectée : $tpmVersion"
 } catch {
     Write-Log "Impossible de récupérer les infos TPM."
 }
@@ -72,16 +71,26 @@ try {
     Write-Log "Secure Boot non disponible ou BIOS non UEFI."
 }
 
-# Processeur
+# CPU
 $cpu = Get-WmiObject Win32_Processor
 $Is64Bit = $cpu.Architecture -eq 9
-Write-Log "Architecture processeur : $($cpu.Architecture) (64 bits requis)"
+Write-Log "Architecture processeur : $($cpu.Architecture) (64 bits requis = 9)"
 
 # RAM
 $ramOK = (Get-WmiObject Win32_ComputerSystem).TotalPhysicalMemory -ge 4GB
 Write-Log "RAM suffisante (≥ 4 Go) : $ramOK"
 
-# CONDITIONS DE RÉUSSITE
+# === DEBUG Section – Diagnostic Affiché en Console ===
+Write-Host "`n======================= Résumé Compatibilité ======================="
+Write-Host "TPM Version >= 2.0 : " ($tpmVersion -ge "2.0")
+Write-Host "Secure Boot activé : " $SecureBootEnabled
+Write-Host "Architecture 64 bits : " $Is64Bit
+Write-Host "RAM ≥ 4 Go : " $ramOK
+Write-Host "Espace disque ≥ $RequiredDiskSpaceGB Go : " ($FreeSpaceGB -ge $RequiredDiskSpaceGB)
+Write-Host "====================================================================`n"
+# =====================================================
+
+# CONDITIONS DE MISE À NIVEAU
 if (
     $tpmVersion -ge "2.0" -and
     $SecureBootEnabled -eq $true -and
@@ -89,9 +98,9 @@ if (
     $ramOK -and
     $FreeSpaceGB -ge $RequiredDiskSpaceGB
 ) {
-    Write-Log "✅ Machine compatible avec Windows 11 24H2. Lancement de la remédiation..."
-    Exit 1  # Triggers remediation
+    Write-Log "✅ Machine compatible avec Windows 11 24H2. Déclenchement de la remédiation."
+    Exit 1  # Intune : remédiation nécessaire
 } else {
     Write-Log "❌ Machine non compatible avec Windows 11 24H2. Mise à niveau bloquée."
-    Exit 0  # Pas de remédiation
+    Exit 0  # Intune : ne rien faire
 }
