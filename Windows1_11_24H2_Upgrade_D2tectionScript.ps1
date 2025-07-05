@@ -28,7 +28,7 @@ Function Write-Log {
     Param([string]$Message)
     "$((Get-Date).ToString('yyyy-MM-dd HH:mm:ss')) - $Message" | Out-File -FilePath $LogPath  -Append
 }
-Write-Log "====================== Upgrading Windows 10 to Windows 11 24H2 Using Intune Proactive Detection Script $(Get-Date -Format 'yyyy/MM/dd') ==================="
+Write-Log "====================== Upgrading Windows 11 to 24H2 Using Intune Proactive Detection Script $(Get-Date -Format 'yyyy/MM/dd') ==================="
 
 $HostName = hostname
 # Check if ESP is running
