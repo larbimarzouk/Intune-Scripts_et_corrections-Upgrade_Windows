@@ -229,3 +229,27 @@ if (
     Exit 0  # Intune : ne rien faire
 }
 
+
+
+
+select 
+    SMS_R_SYSTEM.Name, 
+    SMS_G_System_OPERATING_SYSTEM.Caption,
+    SMS_G_System_OPERATING_SYSTEM.BuildNumber,
+    SMS_G_System_OPERATING_SYSTEM.TotalVisibleMemorySize,
+    SMS_G_System_COMPUTER_SYSTEM.SystemType,
+    SMS_G_System_FIRMWARE.SecureBoot,
+    SMS_G_System_TPM.SpecVersion
+from SMS_R_System 
+inner join SMS_G_System_COMPUTER_SYSTEM on SMS_G_System_COMPUTER_SYSTEM.ResourceID = SMS_R_System.ResourceID 
+inner join SMS_G_System_FIRMWARE on SMS_G_System_FIRMWARE.ResourceID = SMS_R_System.ResourceID 
+inner join SMS_G_System_TPM on SMS_G_System_TPM.ResourceID = SMS_R_System.ResourceID 
+inner join SMS_G_System_OPERATING_SYSTEM on SMS_G_System_OPERATING_SYSTEM.ResourceID = SMS_R_System.ResourceID 
+where 
+    SMS_G_System_COMPUTER_SYSTEM.SystemType = 'x64-based PC' 
+    and SMS_G_System_FIRMWARE.SecureBoot = 1 
+    and SMS_G_System_TPM.SpecVersion like '2.0%' 
+    and SMS_G_System_OPERATING_SYSTEM.TotalVisibleMemorySize >= 4000000 
+    and SMS_G_System_OPERATING_SYSTEM.BuildNumber < 26100
+
+
