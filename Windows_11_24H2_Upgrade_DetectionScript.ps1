@@ -13,7 +13,7 @@
 
 #========================Section de saisie utilisateur========
 
-$DiskSpace = "45"  # Espace disque requis en Go
+$DiskSpace = "64"  # Espace disque requis en Go
 
 #==================================================
 
