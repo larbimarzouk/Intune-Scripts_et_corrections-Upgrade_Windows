@@ -224,7 +224,7 @@ if ($OSVersion -lt 26100) {
       
 
     # $UpdaterArguments = "$updaterbinary /skipeula /auto upgrade"
-    Write-Log "Executing Windows 11 Installation Assistant.exe with silent switch and supressing reboot"
+    Write-Log "Exécution de Windows 11 Installation Assistant.exe avec commutateur silencieux et suppression du redémarrage"
 
     Start-Process -FilePath C:\windows\temp\Upgrade_Win11_24H2\Windows11InstallationAssistant.exe -ArgumentList $UpdaterArguments
     # -Patientez
