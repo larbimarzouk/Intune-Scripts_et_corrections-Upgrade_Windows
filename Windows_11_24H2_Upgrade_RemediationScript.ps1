@@ -4,7 +4,6 @@
 # DESCRIPTION : Mise à niveau vers Windows 11 24H2 depuis Windows 10 en utilisant Intune et la remédiation proactive.
 
 
-# NOTES  
 # Version : V1.0  
 #Auteur :          Marzouk Larbi
 # Date de création : 4 Juillet 2025
